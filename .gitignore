@@ -1,0 +1,9 @@
+data/wtbdata_245days.csv
+
+# __pycache__ ディレクトリを除外
+__pycache__
+
+baseline_gpu_torch_venv
+
+
+checkpoints/*
