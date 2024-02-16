@@ -22,6 +22,8 @@ import random
 #from paddle.io import DataLoader
 import torch.utils.data as data
 from model import BaselineGruModel
+from model import TransformerModel
+
 from wind_turbine_data import WindTurbineDataset
 
 
@@ -134,7 +136,8 @@ class Experiment(object):
         Args:
             args: the arguments to initialize the experimental environment
         """
-        self.model = BaselineGruModel(args)
+        # self.model = BaselineGruModel(args)
+        self.model = TransformerModel(args)
         self.args = args
 
     def get_model(self):
@@ -238,7 +241,7 @@ class Experiment(object):
         """
         batch_x = batch_x.float()
         batch_y = batch_y.float()
-        sample = self.model(batch_x)
+        sample = self.model(batch_x, batch_y )
         #
         # If the task is the multivariate-to-univariate forecasting task,
         # the last column is the target variable to be predicted

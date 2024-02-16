@@ -11,6 +11,7 @@ Date:    2022/03/10
 """
 import time
 import numpy as np
+import pandas as pd
 
 
 def ignore_zeros(predictions, grounds):
@@ -175,6 +176,22 @@ def turbine_scores(pred, gt, raw_data, examine_len, stride=1):
         prediction = prediction[indices]
         targets = gt[i]
         targets = targets[indices]
+        if i == 0:
+            print(f"prediction.shape = {prediction.shape}")
+            print(f"targets.shape = {targets.shape}")# データを配列に入れる
+            prediction_data = [(value,) for value in prediction.flatten()]
+            target_data = [(value,) for value in targets.flatten()]
+
+            # データフレームを作成
+            prediction_df = pd.DataFrame(prediction_data, columns=['prediction'])
+            target_df = pd.DataFrame(target_data, columns=['target'])
+
+            # データフレームを結合
+            combined_df = pd.concat([prediction_df, target_df], axis=1)
+
+            # CSVファイルとして出力
+            combined_df.to_csv('output.csv', index=True)
+
         _mae, _rmse = regressor_scores(prediction[-examine_len:] / 1000, targets[-examine_len:] / 1000)
         if _mae != _mae or _rmse != _rmse:
             continue

@@ -56,3 +56,51 @@ class BaselineGruModel(nn.Module):
         sample = self.projection(self.dropout(dec))
         sample = sample[:, -self.output_len:, -self.out:]
         return sample  # [B, L, D]
+    
+
+
+class TransformerModel(nn.Module):
+    """
+    Desc: A simple Transformer model for time series forecasting
+    """
+    # def __init__(self, input_size, output_size, num_layers, hidden_size, dropout=0.1):
+    def __init__(self, settings):
+        super(TransformerModel, self).__init__()
+        self.input_size = settings["in_var"]
+        self.output_size = settings["out_var"]
+        # self.hidden_size = 10
+        self.num_layers = settings["lstm_layer"]
+        self.output_len = settings["output_len"]
+
+        # Define transformer layers (encoder and decoder)
+        self.transformer_encoder_layer = nn.TransformerEncoderLayer(d_model=self.input_size, nhead=2, batch_first=True)
+        self.transformer_encoder = nn.TransformerEncoder(self.transformer_encoder_layer, num_layers=self.num_layers)
+
+        self.transformer_decoder_layer = nn.TransformerDecoderLayer(d_model=self.input_size, nhead=2, batch_first=True)
+        self.transformer_decoder = nn.TransformerDecoder(self.transformer_decoder_layer, num_layers=self.num_layers)
+
+
+        self.fc = nn.Linear(self.input_size, self.output_size)
+
+    def forward(self, src, tgt):
+        # src: [batch_size, seq_len, input_size]
+        # print("aaa")
+        # print(f"src.shape = {src.shape}")
+        x = torch.zeros([src.shape[0], 144, src.shape[2]])
+        src = torch.cat((src, x), 1)
+        # src = src.permute(1, 0, 2)  # Change to [batch_size, seq_len, input_size]
+        # print("bbb")
+        # print(f"src.shape = {src.shape}")
+        # Encoder
+        encoder_output = self.transformer_encoder(src)
+
+        # Decoder
+        decoder_output = self.transformer_decoder(tgt, encoder_output)
+        output = self.fc(decoder_output)  # Map decoder output to output size
+        
+        # output = self.transformer_encoder(src)
+        # print(f"output.shape = {output.shape}")
+        # print(f"output[-1].shape = {output[-1].shape}")
+        # output = self.fc(output)  # Take the last output of the transformer layers
+        # print(f"output.shape = {output.shape}")
+        return output

@@ -85,7 +85,7 @@ def train_and_val(experiment, model_folder, is_debug=True):
         model.train()
         for i, (batch_x, batch_y) in enumerate(train_loader):
             iter_count += 1
-            # print(f"iter_count = {iter_count}")
+            print(f"iter_count = {iter_count}")
             # print(f"batch_x.shape = {batch_x.size}")
             # print(f"batch_y.shape = {batch_y.size}")
 

@@ -65,6 +65,7 @@ def evaluate(settings):
 
     preds = np.array(predictions)
     gts = np.array(grounds)
+    
     preds = np.sum(preds, axis=0)
     gts = np.sum(gts, axis=0)
 
